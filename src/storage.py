@@ -8,4 +8,17 @@ class DataStorage:
         """
         Salva os dados em um arquivo CSV com os cabeçalhos: symbol, name, price.
         """
-        pass
+        import csv
+
+        if not data:
+            print("Nenhum dado para salvar.")
+            return
+
+        try:
+            with open(filename, mode='w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=["symbol", "name", "price"])
+                writer.writeheader()
+                writer.writerows(data)
+            print(f"Dados salvos com sucesso em: {filename}")
+        except IOError as e:
+            print(f"Erro ao salvar arquivo: {e}")

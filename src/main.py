@@ -13,12 +13,37 @@ def main():
 
     args = parser.parse_args()
 
-    # 1. Scrape
-    scraper = YahooFinanceScraper()
-    # Implementation pending...
+    scraper = None
+    try:
+        print(f"Iniciando crawler para região: {args.region}")
 
-    # 2. Parse
-    # Implementation pending...
+        # 1. Scrape
+        scraper = YahooFinanceScraper()
+        scraper.fetch_screener_page()
+        scraper.apply_region_filter(args.region)
+        html = scraper.get_page_source()
 
-    # 3. Store
-    # Implementation pending...
+        # 2. Parse
+        parser_obj = YahooFinanceParser(html)
+        data = parser_obj.extract_equity_data()
+
+        print(f"Dados extraídos: {len(data)} registros.")
+
+        # 3. Store
+        if data:
+            storage = DataStorage()
+            # Sanitize filename
+            safe_region = "".join(c for c in args.region if c.isalnum() or c in (' ', '_', '-')).strip().replace(' ', '_').lower()
+            filename = f"{safe_region}_stocks.csv"
+            storage.save_to_csv(data, filename)
+        else:
+            print("Nenhum dado encontrado para salvar.")
+
+    except Exception as e:
+        print(f"Erro fatal: {e}")
+    finally:
+        if scraper:
+            scraper.close()
+
+if __name__ == "__main__":
+    main()
