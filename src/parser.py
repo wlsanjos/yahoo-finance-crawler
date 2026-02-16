@@ -16,7 +16,6 @@ class YahooFinanceParser:
         """
         results = []
         try:
-            # Encontrar a tabela (ajustar seletor conforme necessidade, geralmente a primeira tabela ou por classe)
             table = self.soup.find('table')
             if not table:
                 print("Erro: Tabela não encontrada.")
@@ -30,17 +29,27 @@ class YahooFinanceParser:
             rows = tbody.find_all('tr')
             for row in rows:
                 cols = row.find_all('td')
-                if len(cols) > 4: # Garantir que tem colunas suficientes
-                    symbol = cols[1].get_text(strip=True)
-                    name = cols[2].get_text(strip=True)
-                    price = cols[3].get_text(strip=True) # Geralmente Price (Intraday) é a terceira ou quarta.
-                    price = cols[3].get_text(strip=True) # Tentativa no indice 3
+                if len(cols) > 4:
 
-                    results.append({
-                        "symbol": symbol,
-                        "name": name,
-                        "price": price
-                    })
+                    # Indices identificados via debug:
+                    # [0]: Checkbox/Num (ex: "1")
+                    # [1]: Symbol (ex: "NNVDA.BA")
+                    # [2]: Name (ex: "NVIDIA Corporation")
+                    # [3]: Vazio/Graph
+                    # [4]: Price (ex: "11,230.00")
+
+                    try:
+                        symbol = cols[1].get_text(strip=True)
+                        name = cols[2].get_text(strip=True)
+                        price = cols[4].get_text(strip=True)
+
+                        results.append({
+                            "symbol": symbol,
+                            "name": name,
+                            "price": price
+                        })
+                    except IndexError:
+                        continue
         except Exception as e:
             print(f"Erro ao extrair dados: {e}")
             return []
