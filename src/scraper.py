@@ -127,8 +127,6 @@ class YahooFinanceScraper:
 
             next_btn = None
             btns = self.driver.find_elements(By.XPATH, "//button[@data-testid='next-page-button']")
-
-            # Fallback de segurança caso o Yahoo remova o testid
             if not btns:
                 btns = self.driver.find_elements(By.XPATH, "//button[@aria-label='Next' or @title='Next']")
 
