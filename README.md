@@ -1,70 +1,98 @@
-# Yahoo Finance Crawler
+# 📈 Yahoo Finance Crawler
 
-Este é um projeto modular e orientado a objetos em Python para extração de dados do Yahoo Finance. O objetivo é navegar pela página de "Equity Screener", aplicar filtros de região e extrair dados fundamentais das ações listadas.
+Olá! Bem-vindo ao **Yahoo Finance Crawler**.
 
-## 🚀 Funcionalidades
+Este projeto é uma ferramenta que desenvolvi para resolver um desafio comum, mas chato: extrair dados financeiros de um site que muda o tempo todo e usa tecnologias complexas (como React e carregamento dinâmico).
 
-- **Scraping**: Automação de navegador com Selenium para acessar o Screener e aplicar filtros.
-- **Parsing**: Processamento de HTML com BeautifulSoup para extrair dados da tabela.
-- **Armazenamento**: Exportação dos dados extraídos para arquivos CSV.
-- **CLI**: Interface de linha de comando para fácil execução com parâmetros.
+---
 
-## 🛠️ Pré-requisitos
+## 🚀 Como Rodar o Projeto (Passo a Passo)
 
-- Python 3.8+
-- Google Chrome (ou outro navegador compatível com Selenium)
+Vamos direto ao que interessa. Para ver esse robô funcionando na sua máquina, siga os passos abaixo:
 
-## 📦 Instalação
+### 1. Pré-requisitos
+Você vai precisar ter instalado:
+*   **Python 3.10+**
+*   **Google Chrome** (o navegador que o robô controla)
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/seu-usuario/yahoo-finance-crawler.git
-   cd yahoo-finance-crawler
-   ```
-
-2. Crie um ambiente virtual (opcional, mas recomendado):
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # No Windows: venv\Scripts\activate
-   ```
-
-3. Instale as dependências:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## 💻 Uso
-
-Para executar o crawler, utilize o script principal informando a região desejada:
+### 2. Instalação
+Primeiro, baixe o código e prepare o terreno:
 
 ```bash
-python src/main.py --region "United States"
+# Clone este repositório
+git clone https://github.com/seu-usuario/yahoo-finance-crawler.git
+cd yahoo-finance-crawler
+
+# Crie um ambiente virtual (Recomendado para não bagunçar seu Python global)
+python -m venv venv
+
+# Ative o ambiente virtual
+# No Linux/Mac:
+source venv/bin/activate
+# No Windows:
+# venv\Scripts\activate
+
+# Instale as dependências
+pip install -r requirements.txt
 ```
 
-Isso irá:
-1. Abrir o navegador e acessar o Screener.
-2. Filtrar pela região "United States".
-3. Extrair os dados da tabela (Símbolo, Nome, Preço).
-4. Salvar os resultados em um arquivo CSV.
+### 3. Executando o Robô
+O comando é super simples. Você só precisa dizer qual região (país) você quer analisar.
 
-## 🧪 Testes
-
-O projeto utiliza `pytest` para testes automatizados. Para rodar a suíte de testes:
-
+Para buscar ações da **Argentina**, por exemplo:
 ```bash
-pytest
+python -m src.main --region "Argentina"
 ```
 
-## 📂 Estrutura do Projeto
+Para buscar dos **Estados Unidos**:
+```bash
+python -m src.main --region "United States"
+```
 
-```
-yahoo-finance-crawler/
-├── src/
-│   ├── scraper.py  # Automação do navegador (Selenium)
-│   ├── parser.py   # Extração de dados (BeautifulSoup)
-│   ├── storage.py  # Salvamento de arquivos (CSV)
-│   └── main.py     # Ponto de entrada e orquestração
-├── tests/          # Testes automatizados
-├── requirements.txt
-└── README.md
-```
+### O que vai acontecer?
+1.  O **Chrome vai abrir** (você verá ele navegando sozinho).
+2.  Ele vai entrar no "Classic Screener" do Yahoo Finance.
+3.  Vai **selecionar a região** que você pediu e remover os filtros padrão.
+4.  Vai percorrer **página por página**, coletando dados de cada ação.
+5.  No final, ele salva tudo em um arquivo `.csv` na pasta do projeto (ex: `Argentina_stocks.csv`).
+
+---
+
+## 🧪 Como Rodar os Testes
+
+Para garantir que tudo está funcionando direitinho, criei uma bateria de testes automatizados. Você pode rodar eles para conferir a integridade do código.
+
+1. Configure o caminho do projeto (para o Python achar os módulos):
+   ```bash
+   export PYTHONPATH=$PYTHONPATH:.
+   ```
+
+2. Execute os testes com o `pytest`:
+   ```bash
+   pytest
+   ```
+
+**O que está sendo testado?**
+*   **Parser**: Se o HTML está sendo lido corretamente e se ignora dados ruins.
+*   **Scraper**: Simula a navegação (sem abrir o navegador de verdade) para testar a lógica dos botões.
+*   **Storage**: Verifica se o arquivo CSV é criado e salvo certinho.
+
+---
+
+## 🧠 Como Funciona por Baixo dos Panos
+
+Se você é técnico ou recrutador, aqui estão alguns detalhes legais sobre como resolvi os problemas:
+
+*   **Não é só um script**: O código está organizado como um software de verdade (Orientação a Objetos), separado em módulos (`Scraper` para navegar, `Parser` para ler HTML, `Storage` para salvar). Isso facilita muito dar manutenção.
+*   **Paginação que funciona**: Sites modernos (SPA) muitas vezes não mudam a URL quando você clica em "Próxima". Eu implementei uma lógica que "lê" o DOM para ter certeza que a tabela mudou antes de seguir, evitando loops infinitos ou dados duplicados.
+*   **Resiliência**: O robô sabe lidar com erros. Se um elemento demorar para carregar ou um botão mudar de lugar (usei `data-testid` para garantir), ele tenta se recuperar ao invés de simplesmente travar.
+*   **Limpeza de Dados**: O Yahoo entrega números com vírgulas, sufixos (M, B) e símbolos. O `Parser` cuida de tudo isso para entregar dados prontos para análise.
+
+### Estrutura dos Arquivos
+*   `src/main.py`: O chefe da operação. Lê seus comandos e orquestra tudo.
+*   `src/scraper.py`: O "motorista". É quem controla o Selenium e clica nos botões.
+*   `src/parser.py`: O "tradutor". Pega o HTML bagunçado e transforma em dados úteis.
+*   `src/storage.py`: O "escrivão". Salva tudo no CSV.
+
+---
+*Fique à vontade para explorar o código, rodar os testes (`pytest`) ou me mandar uma dúvida!*
