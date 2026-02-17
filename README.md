@@ -20,7 +20,7 @@ Primeiro, baixe o código e prepare o terreno:
 
 ```bash
 # Clone este repositório
-git clone https://github.com/seu-usuario/yahoo-finance-crawler.git
+git clone https://github.com/wlsanjos/yahoo-finance-crawler.git
 cd yahoo-finance-crawler
 
 # Crie um ambiente virtual (Recomendado para não bagunçar seu Python global)
